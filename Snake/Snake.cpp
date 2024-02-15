@@ -64,6 +64,31 @@ void Draw() {
     cout << "Score:" << score << endl;
 }
 
+// Function to set the game difficulty level 
+int SetDifficulty() 
+{ 
+    int dfc, choice; 
+    cout << "\nSET DIFFICULTY\n1: Easy\n2: Medium\n3: hard "
+            "\nNOTE: if not chosen or pressed any other "
+            "key, the difficulty will be automatically set "
+            "to medium\nChoose difficulty level: "; 
+    cin >> choice; 
+    switch (choice) { 
+    case '1': 
+        dfc = 50; 
+        break; 
+    case '2': 
+        dfc = 100; 
+        break; 
+    case '3': 
+        dfc = 150; 
+        break; 
+    default: 
+        dfc = 100; 
+    } 
+    return dfc; 
+} 
+
 void Input() {
     if (_kbhit()) {
         switch (_getch()) {
@@ -131,13 +156,20 @@ void Logic() {
         nTail++;
     }
 }
+//This is where the program is run
 
 int main() {
+    string playerName; 
+    cout << "enter your name: "; 
+    cin >> playerName; 
+    int dfc = SetDifficulty(); 
     Setup();
     while (!gameOver) {
         Draw();
         Input();
         Logic();
+        // creating a delay for according to the chosen 
+        // difficulty 
         Sleep(150); // Milliseconds
     }
     return 0;
