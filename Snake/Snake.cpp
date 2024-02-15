@@ -1,13 +1,14 @@
 #include <iostream>
 #include <vector>
-#include <algorithm> // for sorting
-#include <utility>   // for pair
-#include <string>
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include <conio.h>
+#include <chrono>
+#include <thread>
+#include <string>
 
 using namespace std;
+using namespace std::chrono;
 
 bool gameOver;
 const int width = 20;
@@ -18,14 +19,10 @@ int nTail;
 enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
 
-// Function to update the highscore list
-void updateHighscore(vector<pair<string, int>>& highscores, const string& playerName, int score) {
-    highscores.push_back(make_pair(playerName, score));
-    // Sort the highscores vector in descending order of scores
-    sort(highscores.begin(), highscores.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
-        return a.second > b.second;
-    });
-}
+struct Highscore {
+    string name;
+    int score;
+};
 
 void Setup() {
     gameOver = false;
@@ -40,7 +37,7 @@ void Setup() {
 }
 
 void Draw() {
-    system("cls");
+    system("clear");  // Clear the screen (for Linux/Unix, use "cls" for Windows)
     for (int i = 0; i < width + 2; i++)
         cout << "#";
     cout << endl;
@@ -76,45 +73,44 @@ void Draw() {
     cout << "Score:" << score << endl;
 }
 
-// Function to set the game difficulty level
 int SetDifficulty() {
     int dfc, choice;
     cout << "\nSET DIFFICULTY\n1: Easy\n2: Medium\n3: Hard\nChoose difficulty level: ";
     cin >> choice;
     switch (choice) {
     case 1:
-        dfc = 40;
+        dfc = 150;
         break;
     case 2:
-        dfc = 30;
+        dfc = 100;
         break;
     case 3:
-        dfc = 20;
+        dfc = 50;
         break;
     default:
-        dfc = 30;
+        dfc = 100;
     }
     return dfc;
 }
 
 void Input() {
-    if (_kbhit()) {
-        switch (_getch()) {
-        case 'a':
-            dir = LEFT;
-            break;
-        case 'd':
-            dir = RIGHT;
-            break;
-        case 'w':
-            dir = UP;
-            break;
-        case 's':
-            dir = DOWN;
-            break;
-        case 'x':
-            gameOver = true;
-            break;
+    if (cin.peek() != EOF) {
+        switch (cin.get()) {
+            case 'a':
+                if (dir != RIGHT) dir = LEFT;
+                break;
+            case 'd':
+                if (dir != LEFT) dir = RIGHT;
+                break;
+            case 'w':
+                if (dir != DOWN) dir = UP;
+                break;
+            case 's':
+                if (dir != UP) dir = DOWN;
+                break;
+            case 'x':
+                gameOver = true;
+                break;
         }
     }
 }
@@ -165,35 +161,63 @@ void Logic() {
     }
 }
 
-int main() {
-    string playerName;
-    cout << "Enter your name: ";
-    cin >> playerName;
-    int highscore = 0;
-    string highscorePlayer = "";
-    vector<pair<string, int>> highscores;
+bool CompareScores(const Highscore& a, const Highscore& b) {
+    return a.score > b.score;
+}
 
-    int dfc = SetDifficulty();
-    Setup();
-    while (!gameOver) {
-        Draw();
-        Input();
-        Logic();
- //       Sleep(150);
-
-        // Update highscore list if needed
-        updateHighscore(highscores, playerName, score);
-    }
-
-    cout << "Game Over!" << endl;
-    cout << "Your score: " << score << endl;
-
-    // Displaying highscores
-    cout << "\nHIGHSCORES\n";
-    cout << "Player Name\tScore\n";
+void DisplayHighscores(const vector<Highscore>& highscores) {
+    cout << "Highscores:" << endl;
     for (const auto& entry : highscores) {
-        cout << entry.first << "\t\t" << entry.second << endl;
+        cout << entry.name << ": " << entry.score << endl;
     }
+}
+//This is the maun  function where the game is played
+int main() {
+    vector<Highscore> highscores;
+    
+    do {
+        Setup();
+        string playerName;
+        cout << "Enter your name: ";
+        cin >> playerName;
+
+        int dfc = SetDifficulty();
+        while (!gameOver) {
+            Draw();
+            Input();
+            Logic();
+            this_thread::sleep_for(milliseconds(dfc));
+        }
+
+        cout << "Game Over!" << endl;
+        cout << "Your score: " << score << endl;
+
+        Highscore currentScore = {playerName, score};
+        highscores.push_back(currentScore);
+
+        // Sort the highscores
+        sort(highscores.begin(), highscores.end(), CompareScores);
+
+        // Display highscores
+        DisplayHighscores(highscores);
+
+        // Prompt the user to play again or exit
+        cout << "Do you want to play again? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice != 'y' && choice != 'Y')
+            break; // Exit the loop if not 'y' or 'Y'
+        else {
+            // Reset game variables
+            score = 0;
+            gameOver = false;
+        }
+    } while (true); // Loop until the user chooses to exit
+
+    cout << "Thank you for playing!" << endl;
+    cout << "Press any key to exit...";
+    cin.ignore(); // Ignore any previous input
+    cin.get();    // Wait for a key press
 
     return 0;
 }
