@@ -83,16 +83,16 @@ int SetDifficulty() {
     cin >> choice;
     switch (choice) {
     case 1:
-        dfc = 150;
+        dfc = 40;
         break;
     case 2:
-        dfc = 100;
+        dfc = 30;
         break;
     case 3:
-        dfc = 50;
+        dfc = 20;
         break;
     default:
-        dfc = 100;
+        dfc = 30;
     }
     return dfc;
 }
