@@ -37,7 +37,7 @@ void Setup() {
 }
 
 void Draw() {
-    system("clear");  // Clear the screen (for Linux/Unix, use "cls" for Windows)
+    system("cls");  // Clear the screen (for Linux/Unix, use "cls" for Windows)
     for (int i = 0; i < width + 2; i++)
         cout << "#";
     cout << endl;
