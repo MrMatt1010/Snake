@@ -37,8 +37,9 @@ void Setup() {
     nTail = 0;
 }
 
+//This gets the terminal ready for gameplay and gets it set to accept input
 void Draw() {
-    system("cls");  // Clear the screen for Windows, use "clear" for Linux/Unix
+    system("cls");  // Clears the screen for Windows terminal, use "clear" for Linux/Unix
     for (int i = 0; i < width + 2; i++)
         cout << "#";
     cout << endl;
@@ -74,6 +75,7 @@ void Draw() {
     cout << "Score:" << score << endl;
 }
 
+//Allows player to set the difficulty of the game
 int SetDifficulty() {
     int dfc, choice;
     cout << "\nSET DIFFICULTY\n1: Easy\n2: Medium\n3: Hard\nChoose difficulty level: ";
@@ -146,14 +148,14 @@ void Logic() {
     default:
         break;
     }
-
-    if (x >= width) x = 0; else if (x < 0) x = width - 1;
-    if (y >= height) y = 0; else if (y < 0) y = height - 1;
-
+//If the snake hits the wall
+ if (x >= width || x < 0 || y >= height || y < 0)
+        gameOver = true;
+//If the  snake eats it's tail
     for (int i = 0; i < nTail; i++)
         if (tailX[i] == x && tailY[i] == y)
             gameOver = true;
-
+//If the snake eats the fruit
     if (x == fruitX && y == fruitY) {
         score += 10;
         fruitX = rand() % width;
@@ -173,6 +175,7 @@ void DisplayHighscores(const vector<Highscore>& highscores) {
     }
 }
 
+//Where the game is played from 
 int main() {
     vector<Highscore> highscores;
     
