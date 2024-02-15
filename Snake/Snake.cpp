@@ -5,6 +5,7 @@
 #include <ctime>
 #include <chrono>
 #include <thread>
+#include <conio.h> // Include conio.h for _kbhit() and _getch() functions
 #include <string>
 
 using namespace std;
@@ -37,7 +38,7 @@ void Setup() {
 }
 
 void Draw() {
-    system("cls");  // Clear the screen (for Linux/Unix, use "cls" for Windows)
+    system("cls");  // Clear the screen for Windows, use "clear" for Linux/Unix
     for (int i = 0; i < width + 2; i++)
         cout << "#";
     cout << endl;
@@ -94,8 +95,8 @@ int SetDifficulty() {
 }
 
 void Input() {
-    if (cin.peek() != EOF) {
-        switch (cin.get()) {
+    if (_kbhit()) {
+        switch (_getch()) {
             case 'a':
                 if (dir != RIGHT) dir = LEFT;
                 break;
@@ -171,7 +172,7 @@ void DisplayHighscores(const vector<Highscore>& highscores) {
         cout << entry.name << ": " << entry.score << endl;
     }
 }
-//This is the maun  function where the game is played
+
 int main() {
     vector<Highscore> highscores;
     
